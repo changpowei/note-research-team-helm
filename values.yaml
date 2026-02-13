@@ -1,0 +1,31 @@
+replicaCount: 1
+image:
+  repository: note-research-team
+  tag: v1.0
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 5000
+ingress:
+  enabled: true
+  className: "traefik"
+  host: "research.local"
+  path: /
+  pathType: Prefix
+  redirectHttps: true
+  tls:
+    enabled: true
+    secretName: "research-tls"
+env:
+  notionApiKey: ""
+  geminiApiKey: ""
+  serperApiKey: ""
+  notionParentPageId: ""
+  notionParentPageUrl: ""
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+data:
+  NOTION_PARENT_PAGE_ID: {{ .Values.env.notionParentPageId | quote }}
+  NOTION_PARENT_PAGE_URL: {{ .Values.env.notionParentPageUrl | quote }}

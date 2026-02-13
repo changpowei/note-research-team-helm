@@ -1,0 +1,5 @@
+apiVersion: v2
+name: note-research-team
+description: CrewAI Research Team with Flask Backend
+version: 0.1.0
+appVersion: "1.0"
