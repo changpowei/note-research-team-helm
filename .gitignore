@@ -1,1 +1,18 @@
+# 忽略環境變數檔案
 .env
+.env.*
+! .env.example
+
+# 忽略 TLS 憑證
+tls.key
+tls.crt
+*.pem
+*.key
+*.crt
+
+# 忽略 macOS 系統檔
+.DS_Store
+
+# 忽略 IDE 設定
+.vscode/
+.idea/
