@@ -16,12 +16,7 @@ ingress:
   tls:
     enabled: true
     secretName: "research-tls"
-env:
-  notionApiKey: ""
-  geminiApiKey: ""
-  serperApiKey: ""
-  notionParentPageId: ""
-  notionParentPageUrl: ""
+
 resources:
   limits:
     cpu: 500m

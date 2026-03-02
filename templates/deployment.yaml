@@ -22,7 +22,7 @@ spec:
         - containerPort: 5000
         envFrom:
         - secretRef:
-            name: {{ .Chart.Name }}-secret
+            name: research-team-secret
         - configMapRef:
             name: {{ .Chart.Name }}-config
         resources:
