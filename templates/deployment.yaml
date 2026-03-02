@@ -23,7 +23,5 @@ spec:
         envFrom:
         - secretRef:
             name: research-team-secret
-        - configMapRef:
-            name: {{ .Chart.Name }}-config
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
