@@ -4,4 +4,9 @@ __pycache__/
 .env
 .git/
 .agent/
-helm/
+.github/
+templates/
+Chart.yaml
+values.yaml
+tls.crt
+tls.key

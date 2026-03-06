@@ -16,3 +16,4 @@ tls.crt
 # 忽略 IDE 設定
 .vscode/
 .idea/
+*.pyc

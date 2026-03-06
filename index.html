@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrewAI Research Team - AI 研究助手</title>
+
+    <!-- Google Fonts: Fira Code + Fira Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700\u0026family=Fira+Sans:wght@300;400;500;600;700\u0026display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F172A',
+                        secondary: '#1E293B',
+                        accent: '#22C55E',
+                        bg: '#020617',
+                        textMain: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Fira Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+            }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .output-line {
+            opacity: 0;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 自定義滾動條 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #22C55E;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #16A34A;
+        }
+    </style>
+</head>
+
+<body class="bg-bg text-textMain font-sans min-h-screen">
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- Header -->
+        <div class="text-center mb-12 float-animation">
+            <div class="inline-block mb-4 p-3 bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl">
+                <svg class="w-16 h-16 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                    </path>
+                </svg>
+            </div>
+            <h1
+                class="text-5xl font-bold mb-3 bg-gradient-to-r from-accent to-green-400 bg-clip-text text-transparent font-mono">
+                CrewAI Research Team
+            </h1>
+            <p class="text-slate-400 text-lg">AI 驅動的自動化研究與筆記系統</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-br from-primary to-secondary p-8 rounded-3xl shadow-2xl border border-slate-700">
+                <label for="topic" class="block text-lg font-medium mb-3 text-slate-200">
+                    🔍 輸入研究主題
+                </label>
+                <div class="flex gap-3">
+                    <input type="text" id="topic" placeholder="例如：AI發展趨勢與警惕 2025年以後"
+                        class="flex-1 px-6 py-4 bg-bg border border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-textMain placeholder-slate-500 font-mono transition-all duration-300">
+                    <button id="startBtn" onclick="startResearch()"
+                        class="px-8 py-4 bg-accent hover:bg-green-600 text-primary font-bold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-accent/50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span>開始研究</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div id="statusBadge" class="hidden mb-4">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-accent/20 border border-accent/50 rounded-lg">
+                <div class="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                <span class="text-accent font-medium text-sm">執行中...</span>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div id="outputSection" class="hidden">
+            <div
+                class="bg-gradient-to-br from-primary to-secondary rounded-3xl shadow-2xl border border-slate-700 overflow-hidden">
+                <div class="px-6 py-4 bg-primary/50 border-b border-slate-700 flex items-center gap-3">
+                    <div class="flex gap-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span class="text-slate-400 font-mono text-sm">執行過程</span>
+                </div>
+                <div id="outputContent"
+                    class="p-6 h-96 overflow-y-auto custom-scrollbar bg-bg font-mono text-sm leading-relaxed"></div>
+            </div>
+        </div>
+
+        <!-- Completion Section -->
+        <div id="completionSection" class="hidden mt-8">
+            <div
+                class="bg-gradient-to-br from-accent/20 to-accent/5 p-8 rounded-3xl border border-accent/30 text-center">
+                <div class="inline-block p-4 bg-accent/20 rounded-full mb-4">
+                    <svg class="w-16 h-16 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold mb-3 text-accent">研究完成！</h2>
+                <p class="text-slate-300 mb-6">筆記已成功發佈到 Notion</p>
+                <a href="{{ notion_page_url }}" target="_blank"
+                    class="inline-flex items-center gap-2 px-8 py-4 bg-accent hover:bg-green-600 text-primary font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-accent/50 cursor-pointer">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z" />
+                    </svg>
+                    <span>開啟 CrewAI 筆記頁面</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let eventSource = null;
+
+        // 移除 ANSI 顏色代碼
+        function stripAnsi(text) {
+            return text.replace(/\x1b\[[0-9;]*m/g, '');
+        }
+
+        async function startResearch() {
+            const topic = document.getElementById('topic').value.trim();
+            if (!topic) {
+                alert('請輸入研究主題');
+                return;
+            }
+
+            // 重置 UI
+            const outputSection = document.getElementById('outputSection');
+            const completionSection = document.getElementById('completionSection');
+            const statusBadge = document.getElementById('statusBadge');
+            const outputContent = document.getElementById('outputContent');
+            const startBtn = document.getElementById('startBtn');
+
+            outputSection.classList.remove('hidden');
+            completionSection.classList.add('hidden');
+            statusBadge.classList.remove('hidden');
+            outputContent.innerHTML = '';
+            startBtn.disabled = true;
+
+            // 啟動任務
+            try {
+                const response = await fetch('/api/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic })
+                });
+
+                if (!response.ok) {
+                    throw new Error('啟動失敗');
+                }
+
+                // 連接 SSE 串流
+                connectEventStream();
+
+            } catch (error) {
+                alert('啟動失敗：' + error.message);
+                startBtn.disabled = false;
+                statusBadge.classList.add('hidden');
+            }
+        }
+
+        function connectEventStream() {
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            eventSource = new EventSource('/api/stream');
+            const outputContent = document.getElementById('outputContent');
+
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'output') {
+                    // 顯示 agent 輸出（移除 ANSI 代碼）
+                    const line = document.createElement('div');
+                    line.className = 'output-line text-slate-300';
+                    line.textContent = stripAnsi(data.data);
+                    outputContent.appendChild(line);
+                    outputContent.scrollTop = outputContent.scrollHeight;
+                }
+                else if (data.type === 'status') {
+                    if (data.data === 'completed') {
+                        // 完成
+                        handleCompletion(data);
+                    }
+                    else if (data.data === 'error') {
+                        // 錯誤
+                        handleError(data.message);
+                    }
+                }
+            };
+
+            eventSource.onerror = function () {
+                eventSource.close();
+                handleError('連線中斷');
+            };
+        }
+
+        function handleCompletion(data) {
+            document.getElementById('statusBadge').classList.add('hidden');
+            document.getElementById('startBtn').disabled = false;
+
+            const completionSection = document.getElementById('completionSection');
+            completionSection.classList.remove('hidden');
+
+            if (eventSource) {
+                eventSource.close();
+            }
+        }
+
+        function handleError(message) {
+            document.getElementById('statusBadge').classList.add('hidden');
+            document.getElementById('startBtn').disabled = false;
+            alert('執行錯誤：' + message);
+
+            if (eventSource) {
+                eventSource.close();
+            }
+        }
+
+        // Enter 鍵啟動
+        document.getElementById('topic').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                startResearch();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

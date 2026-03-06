@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: note-research-team
+  repository: ld5874123/note-research-team
   tag: v1.0
   pullPolicy: IfNotPresent
 service:

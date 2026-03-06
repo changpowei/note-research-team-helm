@@ -1,0 +1,51 @@
+name: CI/CD Pipeline
+
+# 觸發條件：當有人 push 程式碼到 main 分支時觸發
+on:
+  push:
+    branches: [ "main" ]
+
+# 定義要執行的工作
+jobs:
+  build-and-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 取得完整程式碼 (Checkout)
+      uses: actions/checkout@v4
+      with:
+        # fetch-depth 設為 0，確保能取到完整的 git history，避免後續 push 發生衝突
+        fetch-depth: 0
+
+    - name: 登入 Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: 設定 Image Tag 為 Git Commit Hash 前 7 碼
+      id: vars
+      # 利用 bash 擷取 github sha 的前七碼，這樣每次 tag 都不一樣
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Build 並 Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        # 替換成你的 Dockerhub 帳號
+        tags: ld5874123/note-research-team:${{ steps.vars.outputs.sha_short }}
+
+    - name: 更新 Helm values.yaml 內的 Image Tag
+      # 使用 sed 指令去替換 values.yaml 內 tag: 後面的值
+      run: |
+        sed -i 's/tag: .*/tag: ${{ steps.vars.outputs.sha_short }}/' values.yaml
+
+    - name: 提交 (Commit) 並推播 (Push) 修改後的 Helm Chart
+      # 為了讓 GitHub 允許 Actions 修改程式碼並 push 回去，我們需要設定機器人身份
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        # 只有當檔案真的有被修改時才 commit
+        git add values.yaml
+        git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update image tag to ${{ steps.vars.outputs.sha_short }} [skip ci]" && git push)
