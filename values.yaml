@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: ld5874123/note-research-team
-  tag: v1.0
+  tag: 30ececf
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
