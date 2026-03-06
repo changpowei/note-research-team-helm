@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-update:
     runs-on: ubuntu-latest
+    # 賦予 Actions 寫入權限，否則 bot 無法 push 回倉庫
+    permissions:
+      contents: write
     
     steps:
     - name: 取得完整程式碼 (Checkout)
